@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="root">
+    <xs:complexType>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element ref="article_entry"/>
+        <xs:element ref="inproceedings_entry"/>
+        <xs:element ref="proceedings_entry"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="proceedings_entry">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="year" type="xs:string" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="month" type="xs:string" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="publisher" type="xs:string" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="booktitle" type="xs:string" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="address" type="xs:string" minOccurs="0" maxOccurs="1"/>
+        <xs:element ref="title" minOccurs="0" maxOccurs="1"/>
+        <xs:element ref="editors" minOccurs="0" maxOccurs="100"/>
+      </xs:sequence>
+      <xs:attribute name="id" type="xs:string" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="title">
+    <xs:complexType mixed="true">
+      <xs:attribute name="doi" type="xs:string"/>
+      <xs:attribute name="isbn" type="xs:string"/>
+      <xs:attribute name="language" type="xs:string"/>
+      <xs:attribute name="pages" type="xs:string"/>
+      <xs:attribute name="url" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="editors">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="editor" type="xs:string" minOccurs="0" maxOccurs="100"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="inproceedings_entry">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="year" type="xs:string" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="month" type="xs:string" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="publisher" type="xs:string" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="booktitle" type="xs:string" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="address" type="xs:string" minOccurs="0" maxOccurs="1"/>
+        <xs:element ref="title"/>
+        <xs:element ref="editors" minOccurs="0"/>
+        <xs:element ref="authors" minOccurs="0"  maxOccurs="100"/>
+      </xs:sequence>
+      <xs:attribute name="id" type="xs:string" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="authors">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="author" type="xs:string" minOccurs="0" maxOccurs="100"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="article_entry">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="year" type="xs:string" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="month" type="xs:string" minOccurs="0" maxOccurs="1"/>
+        <xs:element ref="title" minOccurs="0" maxOccurs="1"/>
+        <xs:element ref="journal" minOccurs="0" maxOccurs="1"/>
+        <xs:element ref="editors" minOccurs="0" />
+        <xs:element ref="authors" minOccurs="0" />
+      </xs:sequence>
+      <xs:attribute name="id" type="xs:string" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="journal">
+    <xs:complexType mixed="true">
+      <xs:attribute name="number" type="xs:string"/>
+      <xs:attribute name="volume" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

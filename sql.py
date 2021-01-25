@@ -98,6 +98,8 @@ def read_xml_file():
                     elif field.replace('@', '') == 'publisher':
                         paper.publisher = value
                     elif field.replace('@', '') == 'booktitle':
+                        value = value.replace('{', '')
+                        value = value.replace('}', '')
                         paper.conference_name = value
                     elif field.replace('@', '') == 'address':
                         paper.address = value
@@ -122,6 +124,8 @@ def read_xml_file():
                             elif journal_key.replace('@', '') == 'number':
                                 paper.number = journal_val
                             elif journal_key.replace('@', '') == '$':
+                                journal_val = journal_val.replace('{', '')
+                                journal_val = journal_val.replace('}', '')
                                 paper.journal = journal_val
 
                     elif field.replace('@', '') == 'title':
@@ -319,7 +323,7 @@ if __name__ == "__main__":
     print('\nCreate database and tables...')
     create_tables()  # create tables in the database
 
-    print('Read the XML file...')
+    print('\nRead the XML file...')
     data = read_xml_file()  # read data
     print('Number of papers:', len(data))
 

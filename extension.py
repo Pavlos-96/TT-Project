@@ -42,7 +42,7 @@ class Database:
 
         result = tx.run(f"MATCH (a{{name:'{name_a}'}}) "
                         f"MATCH (b{{name:'{name_b}'}}) "
-                        f"CREATE (a)-[rel:{rel}]->(b) ")
+                        f"MERGE (a)-[rel:{rel}]->(b) ")
         return result.single()
 
     @staticmethod

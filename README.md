@@ -1,5 +1,9 @@
 # Text Technology Project WS2021
-# ACL Anthorpology
+# ACL Anthology
+
+## XML database
+
+.xml file is created from the full BibTeX anthology.bib found [here](https://www.aclweb.org/anthology/anthology.bib.gz). It can be validated against the anthology.xsd file in the repository. 
 
 ## SQL Queries on *acl_sql.db*
 

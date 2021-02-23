@@ -11,7 +11,7 @@ pip install -r requirements.txt
 
 See corresponding guidelines below on how to run and generate the files for this project.
 
-Please make sure to have the original ACL anthology called `anthology_cleaned.bib` in your current
+Please make sure to have the original ACL anthology called `??????????.bib` in your current
 working directory to generate first the XML file.
 
 

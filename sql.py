@@ -1,4 +1,5 @@
 import os
+import sys
 import string
 import sqlite3
 import xmlschema
@@ -74,18 +75,32 @@ class Paper:
         return info
 
 
-def read_xml_file():
+def read_xml_file() -> List[Paper]:
+    """
+    Read  the XML file. Create a Paper object for each paper
 
-    xs = xmlschema.XMLSchema(os.path.join(os.getcwd(), 'anthology.xsd'))
-    xml = ElementTree.parse(os.path.join(os.getcwd(), 'anthology.xml'))
-    # assert xs.is_valid(xml)  # make sure the xml is valid
+    :return: a list of Paper objects
+    """
+
+    if os.path.exists(os.path.join(os.getcwd(), 'anthology.xsd')) and \
+            os.path.exists(os.path.join(os.getcwd(), 'anthology.xml')):
+        xs = xmlschema.XMLSchema(os.path.join(os.getcwd(), 'anthology.xsd'))
+        xml = ElementTree.parse(os.path.join(os.getcwd(), 'anthology.xml'))
+        assert xs.is_valid(xml)  # make sure the xml is valid
+    else:
+        print('Make sure to have both XML file and its schema in your current working directory.')
+        sys.exit()
+
     xml_data = xs.to_dict(xml)
-
     paper_collection = []
+
+    # loop through two big entries, inproceedings and articles
     for entry_type in ['inproceedings_entry', 'article_entry']:
         entries = xml_data[entry_type]
+
+        # the 2nd loop goes over each paper (or entry)
         for entry in entries:
-            if entry['title']:
+            if entry['title']:  # if the title does not empty --> exists a paper
                 paper = Paper()  # create paper obj
 
                 for field, value in entry.items():
@@ -111,10 +126,10 @@ def read_xml_file():
                             value = value[0]['author']
 
                         for name in value:  # string as last_name, first_name
-                            name = name.split(', ')  # --> into list
+                            name = name.split(', ')  # turn string into list
                             name.reverse()
                             name = ' '.join(name)
-                            name = name.translate(str.maketrans('', '', string.punctuation))
+                            name = name.translate(str.maketrans('', '', string.punctuation))  # remove punc in name
                             paper.authors.append(name)  # append string as 'first_name last_name'
 
                     elif field.replace('@', '') == 'journal':
@@ -150,28 +165,43 @@ def read_xml_file():
 
 
 def insert_to_authors(author: str) -> int:
+    """
+    Insert author to the authors table
+    :param author: name of author
+    :return: author id
+    """
     sql = "INSERT OR IGNORE INTO authors (author) VALUES (?)"
-
-    # insert into db
-    cursor.execute(sql, (author,))
-    return cursor.lastrowid
+    cursor.execute(sql, (author,))  # insert into db
+    return cursor.lastrowid  # return author id
 
 
-def insert_to_conferences(conference_info: dict):
-    fields = []
-    info = ()
+def insert_to_conferences(conference_info: dict) -> int:
+    """
+    Insert data into conferences table
+    :param conference_info: a dict storing info for conferences table
+    :return: the conference id
+    """
+
+    fields = []  # list of column names with values to insert into the table
+    info = ()  # a set of corresponding values of the fields
 
     for key, value in conference_info.items():
         fields.append(key)
         info += (value,)
 
-    values = ['?'] * len(info)
+    values = ['?'] * len(info)  # placeholders in the sql string
     sql = 'INSERT OR IGNORE INTO conferences (' + ','.join(fields) + ') VALUES (' + ','.join(values) + ')'
-    cursor.execute(sql, info)
+    cursor.execute(sql, info)  # finally add values into the table
     return cursor.lastrowid
 
 
-def insert_to_journals(journal_info: dict):
+def insert_to_journals(journal_info: dict) -> int:
+    """
+    Insert data into journals table
+    :param journal_info: a dict storing info for journals table
+    :return: the journal id
+    """
+    # prepare the column names and corresponding values
     fields = []
     info = ()
 
@@ -179,16 +209,26 @@ def insert_to_journals(journal_info: dict):
         fields.append(key)
         info += (value,)
 
-    values = ['?'] * len(info)
+    values = ['?'] * len(info)  # placeholders in the sql string
     sql = 'INSERT OR IGNORE INTO journals (' + ','.join(fields) + ') VALUES (' + ','.join(values) + ')'
-    cursor.execute(sql, info)
+    cursor.execute(sql, info)  # add data into the table
     return cursor.lastrowid
 
 
-def insert_to_papers(paper_info: dict, conference_id=None, journal_id=None, where=None):
+def insert_to_papers(paper_info: dict, conference_id=None, journal_id=None, where=None) -> str:
+    """
+    Insert data into papers table
+    :param paper_info: a dict storing info for papers table
+    :param conference_id: if exists, id of conference the paper appears in
+    :param journal_id: if exists, id of journal the paper appears in
+    :param where: if exists, conference or journal the paper appear in
+    :return: the paper id (in string)
+    """
+    # prepare data
     fields = []
     info = ()
 
+    # a paper can only appear either in a conference or a journal, if any
     if where == 'conference':
         fields.append('conference_id')
         info += (conference_id,)
@@ -206,12 +246,22 @@ def insert_to_papers(paper_info: dict, conference_id=None, journal_id=None, wher
     return paper_info['id']
 
 
-def insert_to_authors_papers(author_id: int, paper_id: str):
+def insert_to_authors_papers(author_id: int, paper_id: str) -> None:
+    """
+    Insert data into authors_papers table
+    :param author_id: author id
+    :param paper_id: paper id
+    :return: None
+    """
     sql = """INSERT INTO author_paper (author_id, paper_id) VALUES (?, ?)"""
-    cursor.execute(sql, (author_id, paper_id))
+    cursor.execute(sql, (author_id, paper_id))  # add data to table
 
 
-def create_tables():
+def create_tables() -> None:
+    """
+    Create tables in the SQL database
+    :return: None
+    """
     authors_sql = """CREATE TABLE IF NOT EXISTS authors ( id INTEGER PRIMARY KEY,
                                                         author TEXT NOT NULL UNIQUE )"""
 
@@ -249,30 +299,41 @@ def create_tables():
     cursor.execute(journal_sql)
     cursor.execute(papers_sql)
     cursor.execute(authors_papers_sql)
-    connection.commit()
+    connection.commit()  # commit changes
 
 
-def insert_data_to_tables():
-    # make sure to check conference and author if already exists before inserting
+def insert_data_to_tables() -> None:
+    """
+    Insert data to all tables in the SQL database
+    :return: None
+    """
+
+    # conference, journal, and author might already exist before inserting a new paper
+    # because a conference and a journal can contain more than one paper
+    # and a paper can have more than one author
+
+    # data = list of all Paper objects read from XML file
     for data_point in data:
 
+        # each data point is a Paper object
+        # see Paper obj for its structure
         where_published = data_point.where_published()
-        conference = data_point.get_conference_info()
-        journal = data_point.get_journal_info()
-        paper = data_point.get_paper_info()
+        conference = data_point.get_conference_info()  # as dict
+        journal = data_point.get_journal_info()  # as dict
+        paper = data_point.get_paper_info()  # as dict
         authors = data_point.get_author_info()  # as list of authors
 
         if where_published == 'conference':
             # insert conference
             conference = data_point.get_conference_info()
-            if conference['conference'] not in conference2id:
+            if conference['conference'] not in conference2id:  # check if exists
                 conference_id = insert_to_conferences(conference_info=conference)
                 conference2id[conference['conference']] = conference_id
                 id2conference[conference_id] = conference['conference']
 
         elif where_published == 'journal':
             # insert into journal
-            if journal['journal'] not in journal2id:
+            if journal['journal'] not in journal2id:  # check if exists
                 journal_id = insert_to_journals(journal_info=journal)
                 journal2id[journal['journal']] = journal_id
                 id2journal[journal_id] = journal['journal']
@@ -292,7 +353,7 @@ def insert_data_to_tables():
 
         # insert authors
         for author in authors:
-            if author not in author2id:
+            if author not in author2id:  # check if exists
                 author_id = insert_to_authors(author=author)
                 author2id[author] = author_id
                 id2author[author_id] = author
@@ -301,16 +362,17 @@ def insert_data_to_tables():
 
             # insert to author-paper table
             insert_to_authors_papers(author_id=author_id, paper_id=paper_id)
-        connection.commit()  # commit the change
+        connection.commit()  # commit the changes
 
 
 if __name__ == "__main__":
 
-    # from an XML file, create an SQL database
+    # create an SQL database
     db_name = 'acl_sql.db'
     connection = sqlite3.connect(os.path.join(os.getcwd(), db_name))  # establish a connection
     cursor = connection.cursor()  # create the cursor object
 
+    # to track the conference, journal, author, paper
     author2id = {}
     id2author = {}
     conference2id = {}
@@ -321,11 +383,11 @@ if __name__ == "__main__":
     id2paper = {}
 
     print('\nCreate database and tables...')
-    create_tables()  # create tables in the database
+    create_tables()  # create tables in the SQL database
 
     print('\nRead the XML file...')
-    data = read_xml_file()  # read data
+    data = read_xml_file()  # read data from XML file
     print('Number of papers:', len(data))
 
     print('\nInsert data into the database...')
-    insert_data_to_tables()
+    insert_data_to_tables()  # insert data into SQL tables

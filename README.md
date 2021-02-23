@@ -19,9 +19,9 @@ working directory to generate first the XML file.
 
 .xml file is created from the full BibTeX anthology.bib found [here](https://www.aclweb.org/anthology/anthology.bib.gz). It can be validated against the anthology.xsd file in the repository. 
 
-## SQL 
+## SQL database
 
-### Create *acl_sql.db* database
+### Create *acl_sql.db* file
 
 Make sure to create or download the XML files `anthology.xml`
 and `anthology.xsd` and have them in your working directory.
@@ -36,9 +36,14 @@ It will create the sql database called `acl_sql.db` and
 fill in data from xml file in the corresponding tables/columns.
 
 See the file `SQL.png` for table structure. Except for the *id*,
-all other column format is text.
+all other columns is in text format. Note that paper id is in text format
+as we use the same id from the ACL anthology.
 
 ### Queries on *acl_sql.db*
+
+You should, of course, have access to a sql interface such as *psql* on your computer.
+Or A [SQL DB browser](https://sqlitebrowser.org/) can be used instead if one is not very familiar
+with using SQL on the terminal.
 
 The table that holds m-to-n relationship between authors and papers is called *author_paper*
 
@@ -72,4 +77,12 @@ JOIN authors ON authors.id = author_id
 WHERE title LIKE '%emotion%'
 AND author LIKE '%roman%'
 ```
+
+
+
+## Nep4j graph database
+
+
+
+
 

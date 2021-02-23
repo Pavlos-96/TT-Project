@@ -42,7 +42,7 @@ as we use the same id from the ACL anthology.
 ### Queries on *acl_sql.db*
 
 You should, of course, have access to a sql interface such as *psql* on your computer.
-Or A [SQL DB browser](https://sqlitebrowser.org/) can be used instead if one is not very familiar
+Or a [SQL DB browser](https://sqlitebrowser.org/) can be used instead if one is not very familiar
 with using SQL on the terminal.
 
 The table that holds m-to-n relationship between authors and papers is called *author_paper*

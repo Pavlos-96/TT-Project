@@ -4,6 +4,8 @@ import sys
 import re
 
 parser = bibtex.Parser()
+# anthology has been edited in Notepad++ in order to avoid unicode errors 
+# to reproduce, perform search&replace [^\x00-\x7F]+ 
 data = parser.parse_file('./anthology_cleaned.bib')
 
 # write dump to file

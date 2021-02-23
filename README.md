@@ -80,8 +80,45 @@ AND author LIKE '%roman%'
 
 
 
-## Nep4j graph database
+## Neo4j graph database
 
+### Create the data base
+Make sure that Neo4j is installed on your computer.
+Open it and add a local DBMS.
+
+### Fill the data base
+Make sure to create or download the XML files `anthology.xml`
+and `anthology.xsd` and have them in your working directory.
+
+As it could take more than 24 hours to processing all 60675 entries, we applied an early stopping mechanism where only 300 entries are considered which should take no longer than 3 minutes. The number of entries to be considered can still be adjusted by changing the integer in line 220.
+
+To run the code with early stopping open your terminal and type:
+```
+python3 neo4j.py True
+```
+To run it without early stopping type:
+```
+python3 neo4j.py False
+```
+
+### Do queries
+Look into the details of the data base in your desktop version of Neo4j and click on 'localhost' under 'IP' to open the data base in your browser.
+To get an overview of the node types and relationships that exist in the data base you can have a look in our presentation.
+
+Here are some example queries/query templates:
+
+Query to find a paper that was written by '<author_name>' and where the title contains '<word_in_title>' (not that useful when having used early stopping)
+```
+MATCH (a:Paper)<-[:WROTE]-(b:Author) WHERE a.name CONTAINS '<word_in_title>' AND b.name CONTAINS '<author_name>' RETURN a
+```
+Query to find ten papers that were published in the year '2010' and where the title contains '<word_in_title>' (not that useful when having used early stopping)
+```
+MATCH (a:Paper)-[:APPEARED_IN]->(b:Year) WHERE b.name CONTAINS '2010' RETURN a,b LIMIT 10
+```
+Query to find an author who wrote an article in a journal and in a Conference:
+```
+MATCH (a:Conference)<-[:APPEARED_IN]-(b:Paper)<-[:WROTE]-(c:Author)-[:WROTE]->(d:Paper)-[:APPEARED_IN]->(e:Journal) RETURN a,b,c,d,e LIMIT 1
+```
 
 
 

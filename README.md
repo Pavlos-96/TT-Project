@@ -109,15 +109,19 @@ Here are some example queries/query templates:
 
 Query to find a paper that was written by '<author_name>' and where the title contains '<word_in_title>' (not that useful when having used early stopping)
 ```
-MATCH (a:Paper)<-[:WROTE]-(b:Author) WHERE a.name CONTAINS '<word_in_title>' AND b.name CONTAINS '<author_name>' RETURN a
+MATCH (a:Paper)<-[:WROTE]-(b:Author) 
+WHERE a.name CONTAINS '<word_in_title>' AND b.name 
+CONTAINS '<author_name>' RETURN a
 ```
 Query to find ten papers that were published in the year '2010' and where the title contains '<word_in_title>' (not that useful when having used early stopping)
 ```
-MATCH (a:Paper)-[:APPEARED_IN]->(b:Year) WHERE b.name CONTAINS '2010' RETURN a,b LIMIT 10
+MATCH (a:Paper)-[:APPEARED_IN]->(b:Year) 
+WHERE b.name CONTAINS '2010' RETURN a,b LIMIT 10
 ```
 Query to find an author who wrote an article in a journal and in a Conference:
 ```
-MATCH (a:Conference)<-[:APPEARED_IN]-(b:Paper)<-[:WROTE]-(c:Author)-[:WROTE]->(d:Paper)-[:APPEARED_IN]->(e:Journal) RETURN a,b,c,d,e LIMIT 1
+MATCH (a:Conference)<-[:APPEARED_IN]-(b:Paper)<-[:WROTE]-(c:Author)
+-[:WROTE]->(d:Paper)-[:APPEARED_IN]->(e:Journal) RETURN a,b,c,d,e LIMIT 1
 ```
 
 

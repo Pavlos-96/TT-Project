@@ -4,9 +4,7 @@ import sys
 import re
 
 parser = bibtex.Parser()
-# anthology has been edited in Notepad++ in order to avoid unicode errors 
-# to reproduce, perform search&replace [^\x00-\x7F]+ 
-data = parser.parse_file('./anthology_cleaned.bib')
+data = parser.parse_file('./anthology_edited.bib')
 
 # write dump to file
 sys.stdout = open('./anthology.xml', 'a')
@@ -28,8 +26,6 @@ month = []
 volume = []
 journal = []
 number = []
-
-# TODO: clean these ones
 author = []
 editor = []
 title = []
@@ -143,7 +139,6 @@ for k1, v1 in data.entries.items():
         editor.append('null')
         author.append('null')
 
-    #print(len(abbrev), len(author))
 
 
 # clean and unify month values

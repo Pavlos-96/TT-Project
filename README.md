@@ -11,13 +11,24 @@ pip install -r requirements.txt
 
 See corresponding guidelines below on how to run and generate the files for this project.
 
-Please make sure to have the original ACL anthology called `??????????.bib` in your current
-working directory to generate first the XML file.
-
 
 ## XML database
 
-.xml file is created from the full BibTeX anthology.bib found [here](https://www.aclweb.org/anthology/anthology.bib.gz). It can be validated against the anthology.xsd file in the repository. 
+The dataset consists of the full ACL Anthology in BibTeX format which can be found [here](https://www.aclweb.org/anthology/anthology.bib.gz). 
+
+In order to avoid reading errors in the pybtex library, the `anthology.bib` should be edited via [Notepad++](https://notepad-plus-plus.org/downloads/) or similar tools featuring regular expressions (the command might not be the same). 
+Perform the replace command searching for `[^\x00-\x7F]+` and replacing it with an empty character, which removes all error-inducing characters (e.g. Chinese ones) from the file.
+Save the resulting file as `anthology_edited.bib` into the project directory.
+
+Now simply execute
+
+```
+python3 xmlParser.py
+```
+
+to obtain the `anthology.xml` file which will be added to the directory.
+
+This file can be validated against the given `anthology.xsd` file, in our case done in the [XML Copy Editor](https://xml-copy-editor.sourceforge.io/).
 
 ## SQL database
 
